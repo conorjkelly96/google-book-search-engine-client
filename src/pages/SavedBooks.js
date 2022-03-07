@@ -10,10 +10,10 @@ import {
 import { useMutation } from "@apollo/client";
 
 import Auth from "../utils/auth";
-import { searchGoogleBooks } from "../utils/bookFetcher";
+import { searchGoogleBooks } from "../utils/API";
 import { saveBookIds, getSavedBookIds } from "../utils/localStorage";
-import { SAVEBOOK } from "../graphql-queries-mutations/mutations";
-import ServerAlert from "../components/ServerAlert";
+import { SAVEBOOK } from "../gql/mutations";
+import ErrorAlert from "../components/Alert";
 
 const SearchBooks = () => {
   const token = Auth.loggedIn() ? Auth.getToken() : null;
@@ -45,7 +45,7 @@ const SearchBooks = () => {
       setSavedBookIds([...savedBookIds, bookToSave.bookId]);
     },
     onError: () => {
-      return ServerAlert;
+      return ErrorAlert;
     },
   });
 
@@ -77,7 +77,7 @@ const SearchBooks = () => {
       setSearchedBooks(bookData);
       setSearchInput("");
     } catch (err) {
-      return ServerAlert;
+      return ErrorAlert;
     }
   };
 
@@ -99,7 +99,7 @@ const SearchBooks = () => {
         },
       });
     } catch (err) {
-      return ServerAlert;
+      return Alert;
     }
   };
 
