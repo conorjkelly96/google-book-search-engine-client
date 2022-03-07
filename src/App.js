@@ -1,21 +1,42 @@
 import React from "react";
-import { HashRouter as Router, Switch, Route } from "react-router-dom";
-import { ApolloClient, ApolloProvider, InMemoryCache } from "@apollo/client";
+import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
+import {
+  ApolloClient,
+  InMemoryCache,
+  ApolloProvider,
+  createHttpLink,
+} from "@apollo/client";
+import { setContext } from "@apollo/client/link/context";
 
 import SearchBooks from "./pages/SearchBooks";
 import SavedBooks from "./pages/SavedBooks";
 import Navbar from "./components/Navbar";
 
+const httpLink = createHttpLink({
+  uri: process.env.REACT_APP_GRAPHQL_API || "http://localhost:4000",
+  credentials: "same-origin",
+});
+
+const authLink = setContext((_, { headers }) => {
+  const token = localStorage.getItem("id_token");
+
+  return {
+    headers: {
+      ...headers,
+      authorization: token ? `Bearer ${token}` : "",
+    },
+  };
+});
+
 const client = new ApolloClient({
-  uri:
-    process.env.GRAPHQL_URL || "https://marn-book-finder-server.herokuapp.com/",
+  link: authLink.concat(httpLink),
   cache: new InMemoryCache(),
 });
 
 function App() {
   return (
     <ApolloProvider client={client}>
-      <Router baseName="/">
+      <Router>
         <>
           <Navbar />
           <Switch>
